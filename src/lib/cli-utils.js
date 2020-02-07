@@ -1,5 +1,3 @@
-const parseUsername = username => (username || '').replace('@', '')
-
 const handleError = exit => err => {
   if (err != null) {
     if (err.statusCode === 429) {
@@ -14,6 +12,5 @@ const handleError = exit => err => {
 
 
 module.exports = {
-  parseUsername,
   handleError
 }
