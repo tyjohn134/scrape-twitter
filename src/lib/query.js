@@ -29,26 +29,30 @@ const toText = response => response.text()
 
 const toHtml = response => {
   let minPosition = null
+  let hasMoreItems = null
   let html = null
   if ('items_html' in response) {
     minPosition = response['min_position']
     html = response['items_html'].trim()
+    hasMoreItems = response['has_more_items']
   } else if ('conversation_html' in response) {
     minPosition = response['min_position']
     html = response['conversation_html'].trim()
+    hasMoreItems = response['has_more_items']
   } else if (
     'descendants' in response &&
     'items-html' in response['descendants']
   ) {
     minPosition = response['descendants']['min_position']
     html = response['descendants']['items_html'].trim()
+    hasMoreItems = response['descendants']['has_more_items']
   }
 
   debug('received html of length:', html.length)
   if (minPosition) {
     debug('the min_position within the response is:', minPosition)
   }
-  return { html, _minPosition: minPosition }
+  return { html, _minPosition: minPosition, _hasMoreItems: hasMoreItems }
 }
 
 const query = (url, options, fetcher = fetch) => {

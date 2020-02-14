@@ -7,9 +7,8 @@ class TweetStream extends Readable {
   isLocked = false
 
   _numberOfTweetsRead = 0
-  _firstReadTweet = undefined
-  _lastReadTweet = undefined
-
+  _maxPosition = '-1'
+  _hasMoreTweets = 'true'
   constructor (query, type, { count } = {}) {
     super({ objectMode: true })
     this.query = query
@@ -42,21 +41,14 @@ class TweetStream extends Readable {
         this._lastReadTweet
       } ]`
     )
-    const maxPosition =
-      this._firstReadTweet && this._lastReadTweet
-        ? `TWEET-${this._lastReadTweet}-${this._firstReadTweet}`
-        : null
+
     twitterQuery
-      .queryTweets(this.query, this.type, maxPosition)
-      .then(tweets => {
-        if (!this._firstReadTweet) {
-          this._firstReadTweet = tweets[0] ? tweets[0].id : null
-        }
+      .queryTweets(this.query, this.type, this._maxPosition)
+      .then(tweet_data => {
+        let tweets = tweet_data.tweets
+        let pos_data = tweet_data.pos_dat
 
-        let lastReadTweetId
         for (const tweet of tweets) {
-          lastReadTweetId = tweet.id
-
           this.push(tweet)
           this._numberOfTweetsRead++
           if (this._numberOfTweetsRead >= this.count) {
@@ -64,29 +56,18 @@ class TweetStream extends Readable {
             break
           }
         }
-
-        // We have to check to see if there are more tweets, by seeing if the
-        // last tweet id has been repeated or not.
-        const hasZeroTweets = lastReadTweetId === undefined
-        const hasDifferentLastTweet = this._lastReadTweet !== lastReadTweetId
-        const hasMoreTweets = !hasZeroTweets && hasDifferentLastTweet
+        this._maxPosition = pos_data._minPosition
+        const hasMoreTweets = pos_data._hasMoreItems
         if (hasMoreTweets === false) {
           debug('TweetStream has no more tweets:', {
-            hasZeroTweets,
-            hasDifferentLastTweet,
             hasMoreTweets
           })
           this.push(null)
         } else {
           debug('TweetStream has more tweets:', {
-            hasZeroTweets,
-            hasDifferentLastTweet,
             hasMoreTweets
           })
         }
-
-        debug(`TweetStream sets the last tweet to ${lastReadTweetId}`)
-        this._lastReadTweet = lastReadTweetId
 
         this.isLocked = false
         debug('TweetStream is now unlocked')

@@ -1,11 +1,13 @@
 const cheerio = require('cheerio')
 const query = require('./query')
 const parser = require('./parser')
+const debug = require('debug')('scrape-twitter:twitter-query')
 const fetchWithCookie = require('./twitter-login').fetch
 
-const toCheerio = ({ html, _minPosition }) => ({
+const toCheerio = ({ html, _minPosition, _hasMoreItems }) => ({
   $: cheerio.load(html),
-  _minPosition
+  _minPosition,
+  _hasMoreItems
 })
 
 const getUserTimeline = (username, startingId, { replies = false }) => {
@@ -115,20 +117,24 @@ const getUserProfile = username => {
     .then(parser.toTwitterProfile)
 }
 
-const queryTweets = (q, type, maxPosition) => {
+const queryTweets = async (q, type, maxPosition) => {
   const url = 'https://twitter.com/i/search/timeline'
   const options = {
     vertical: 'default',
-    src: 'typd',
+    src: 'unkn',
     include_available_features: '1',
     include_entities: '1',
-    f: type,
+    reset_error_state: 'false',
+    f: 'tweets',
     q: q,
     max_position: maxPosition
   }
-  return query(url, options)
+     let data = await query(url, options).then(toCheerio)
+    debug('query result: ' + JSON.stringify(data))
+    let tweets = await query(url, options)
     .then(toCheerio)
     .then(parser.toTweets)
+    return {tweets: tweets, pos_dat: data}
 }
 
 module.exports = {
