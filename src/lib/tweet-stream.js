@@ -1,11 +1,10 @@
 const Readable = require('readable-stream/readable')
 const debug = require('debug')('scrape-twitter:tweet-stream')
-
+const perf = require('execution-time')()
 const twitterQuery = require('./twitter-query')
 
 class TweetStream extends Readable {
   isLocked = false
-
   _numberOfTweetsRead = 0
   _maxPosition = '-1'
   _hasMoreTweets = 'true'
@@ -18,6 +17,7 @@ class TweetStream extends Readable {
   }
 
   _read () {
+    perf.start()
     if (this.isLocked) {
       debug('TweetStream cannot be read as it is locked')
       return false
@@ -41,7 +41,6 @@ class TweetStream extends Readable {
         this._lastReadTweet
       } ]`
     )
-
     twitterQuery
       .queryTweets(this.query, this.type, this._maxPosition)
       .then(tweetData => {
@@ -78,6 +77,8 @@ class TweetStream extends Readable {
         }
       })
       .catch(err => this.emit('error', err))
+    const results = perf.stop()
+    debug('End of read function in tweet stream time: ' + results.time)
   }
 }
 

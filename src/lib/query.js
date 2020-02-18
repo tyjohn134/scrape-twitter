@@ -56,9 +56,11 @@ const toHtml = response => {
 }
 
 const query = (url, options, fetcher = fetch) => {
-  const qs = queryString.stringify(options)
+  const qs = queryString.stringify(options, {sort: false})
+  debug ('querystring: ' + qs)
   const resource = url + (qs.length ? `?${qs}` : '')
-  debug('query on resource:', resource)
+
+    debug('query on resource:', resource)
   return fetcher(resource, {
     agent: https.globalAgent,
     timeout: process.env.SCRAPE_TWITTER_TIMEOUT || DEFAULT_TIMEOUT

@@ -124,13 +124,12 @@ const queryTweets = async (q, type, maxPosition) => {
     src: 'unkn',
     include_available_features: '1',
     include_entities: '1',
+    max_position: maxPosition,
     reset_error_state: 'false',
     f: 'tweets',
-    q: q,
-    max_position: maxPosition
+    q: q
   }
   let data = await query(url, options).then(toCheerio)
-  debug('query result: ' + JSON.stringify(data))
   let tweets = await query(url, options)
     .then(toCheerio)
     .then(parser.toTweets)
