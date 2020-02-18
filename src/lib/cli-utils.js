@@ -10,7 +10,6 @@ const handleError = exit => err => {
   }
 }
 
-
 module.exports = {
   handleError
 }

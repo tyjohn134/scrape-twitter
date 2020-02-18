@@ -44,9 +44,9 @@ class TweetStream extends Readable {
 
     twitterQuery
       .queryTweets(this.query, this.type, this._maxPosition)
-      .then(tweet_data => {
-        let tweets = tweet_data.tweets
-        let pos_data = tweet_data.pos_dat
+      .then(tweetData => {
+        let tweets = tweetData.tweets
+        let posData = tweetData.pos_dat
 
         for (const tweet of tweets) {
           this.push(tweet)
@@ -56,8 +56,8 @@ class TweetStream extends Readable {
             break
           }
         }
-        this._maxPosition = pos_data._minPosition
-        const hasMoreTweets = pos_data._hasMoreItems
+        this._maxPosition = posData._minPosition
+        const hasMoreTweets = posData._hasMoreItems
         if (hasMoreTweets === false) {
           debug('TweetStream has no more tweets:', {
             hasMoreTweets

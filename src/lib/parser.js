@@ -215,7 +215,7 @@ const toTwitterProfile = ({ $ }) => {
   const $canopy = $('.ProfileCanopy')
   const $header = $('.ProfileHeaderCard')
   const $nav = $('.ProfileNav')
-
+  const userID = $nav.attr('data-user-id')
   const profileImage = $canopy.find('.ProfileAvatar-image').attr('src')
   const backgroundImage = $canopy
     .find('.ProfileCanopy-headerBg img')
@@ -274,6 +274,7 @@ const toTwitterProfile = ({ $ }) => {
 
   const userProfile = {
     screenName,
+    userID,
     profileImage,
     backgroundImage,
     name,

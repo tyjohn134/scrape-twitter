@@ -129,12 +129,12 @@ const queryTweets = async (q, type, maxPosition) => {
     q: q,
     max_position: maxPosition
   }
-     let data = await query(url, options).then(toCheerio)
-    debug('query result: ' + JSON.stringify(data))
-    let tweets = await query(url, options)
+  let data = await query(url, options).then(toCheerio)
+  debug('query result: ' + JSON.stringify(data))
+  let tweets = await query(url, options)
     .then(toCheerio)
     .then(parser.toTweets)
-    return {tweets: tweets, pos_dat: data}
+  return { tweets: tweets, pos_dat: data }
 }
 
 module.exports = {

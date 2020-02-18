@@ -25,7 +25,7 @@
   },
   "scripts": {
     "test": "npm run -s lint && npm run -s unit",
-    "lint": "eslint {bin,src,test} --fix",
+    "lint": "eslint bin src test --fix",
     "unit": "jest --testEnvironment=node",
     "build": "rimraf dist && babel src --out-dir dist",
     "push": "git push --follow-tags origin master",
