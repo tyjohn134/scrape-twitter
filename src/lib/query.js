@@ -63,7 +63,8 @@ const query = (url, options, fetcher = fetch) => {
     debug('query on resource:', resource)
   return fetcher(resource, {
     agent: https.globalAgent,
-    timeout: process.env.SCRAPE_TWITTER_TIMEOUT || DEFAULT_TIMEOUT
+    timeout: process.env.SCRAPE_TWITTER_TIMEOUT || DEFAULT_TIMEOUT,
+    keepalive: true
   })
     .then(checkStatus)
     .then(toJson)
@@ -74,7 +75,8 @@ const get = (resource, fetcher = fetch) => {
   debug('get on resource:', resource)
   return fetcher(resource, {
     agent: https.globalAgent,
-    timeout: process.env.SCRAPE_TWITTER_TIMEOUT || DEFAULT_TIMEOUT
+    timeout: process.env.SCRAPE_TWITTER_TIMEOUT || DEFAULT_TIMEOUT,
+    keepalive: true
   })
     .then(checkStatus)
     .then(toText)
